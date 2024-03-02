@@ -15,7 +15,7 @@ func main() {
 		fmt.Println("Could not establish connection!", err.Error())
 		return
 	}
-
+	defer listener.Close() // TODO: check is this needed??
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
