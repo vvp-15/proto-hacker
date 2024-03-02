@@ -36,4 +36,13 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	fmt.Printf("Received data => : %s\n", buffer[:n])
+
+	respData := string(buffer[:n])
+
+	_, err = conn.Write([]byte(respData))
+	if err != nil {
+		fmt.Println("Error sending back data => :", err.Error())
+	} else {
+		fmt.Println("dats sent succesfully")
+	}
 }
