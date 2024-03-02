@@ -30,22 +30,25 @@ func main() {
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	buffer := make([]byte, 1024)
-
-	n, err := conn.Read(buffer)
-	if err != nil {
-		if err != io.EOF {
-			fmt.Println("could not read data form connection! => ", err.Error())
+	for {
+		n, err := conn.Read(buffer)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println("could not read data form connection! => ", err.Error())
+			}
+			return
 		}
-		return
+		fmt.Printf("Received data => : %s\n", buffer[:n])
+	
+		respData := string(buffer[:n])
+	
+		_, err = conn.Write([]byte(respData))
+		if err != nil {
+			fmt.Println("Error sending back data => :", err.Error())
+		} else {
+			fmt.Println("dats sent succesfully")
+		}
 	}
-	fmt.Printf("Received data => : %s\n", buffer[:n])
 
-	respData := string(buffer[:n])
-
-	_, err = conn.Write([]byte(respData))
-	if err != nil {
-		fmt.Println("Error sending back data => :", err.Error())
-	} else {
-		fmt.Println("dats sent succesfully")
-	}
+	
 }
