@@ -11,14 +11,14 @@ func main() {
 
 	listener, err := net.Listen("tcp", ":80")
 	if err != nil {
-		fmt.Println("Could not establish connection!")
+		fmt.Println("Could not establish connection!", err.Error())
 		return
 	}
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Could not establish listener!")
+			fmt.Println("Could not establish listener!", err.Error())
 			return
 		}
 
@@ -32,7 +32,7 @@ func handleConnection(conn net.Conn) {
 
 	n, err := conn.Read(buffer)
 	if err != nil {
-		fmt.Println("could not read data form connection!")
+		fmt.Println("could not read data form connection! => ", err.Error())
 		return
 	}
 	fmt.Printf("Received data => : %s\n", buffer[:n])
