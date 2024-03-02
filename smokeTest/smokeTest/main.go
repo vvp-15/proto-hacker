@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 )
 
@@ -32,7 +33,9 @@ func handleConnection(conn net.Conn) {
 
 	n, err := conn.Read(buffer)
 	if err != nil {
-		fmt.Println("could not read data form connection! => ", err.Error())
+		if err != io.EOF {
+			fmt.Println("could not read data form connection! => ", err.Error())
+		}
 		return
 	}
 	fmt.Printf("Received data => : %s\n", buffer[:n])
