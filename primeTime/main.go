@@ -74,6 +74,8 @@ func handleConnection(conn net.Conn) {
 		fmt.Println("Final respData => ", respData)
 
 		respByteData, err := json.Marshal(respData)
+
+		respByteData = append(respByteData, []byte("\n")...)
 		if err != nil {
 			fmt.Println("cannot marshal data to send response")
 			conn.Write([]byte("malformed"))
