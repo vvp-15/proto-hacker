@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"reflect"
+	"strings"
 )
 
 type jsonMessage struct {
@@ -48,49 +49,48 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 		fmt.Printf("Received data => : %s\n", buffer[:n-1])
-		var reqData jsonMessage
-		err = json.Unmarshal(buffer[:n-1], &reqData)
-		if err != nil {
-			fmt.Println("data cannot be unmarshalled", err.Error())
-			conn.Write([]byte("malformed"))
-			return
+		var reqString = strings.Split(string(buffer[:n-1]), "\n")
+
+		for _, val := range reqString {
+			var reqData jsonMessage
+			err = json.Unmarshal([]byte(val), &reqData)
+			if err != nil {
+				fmt.Println("data cannot be unmarshalled", err.Error())
+				conn.Write([]byte("malformed"))
+				return
+			}
+
+			fmt.Println("Fetched values from json :", reqData.Method, reqData.Number)
+
+			if !reqData.isRequestDataValid() {
+				conn.Write([]byte("malformed"))
+				fmt.Println("data malformed")
+				return
+			} else {
+				fmt.Println("data valid")
+			}
+			respData := respMessage{
+				Method: "isPrime",
+				Prime:  reqData.isNumberPrime(),
+			}
+			fmt.Println("Final respData => ", respData)
+			respByteData, err := json.Marshal(respData)
+			respByteData = append(respByteData, []byte("\n")...)
+			if err != nil {
+				fmt.Println("cannot marshal data to send response")
+				conn.Write([]byte("malformed"))
+				return
+			}
+
+			_, err = conn.Write(respByteData)
+			if err != nil {
+				fmt.Println("cannot send response")
+				conn.Write([]byte("malformed"))
+				return
+			}
+			fmt.Println("response sent successfully")
 		}
-
-		fmt.Println("Fetched values from json :", reqData.Method, reqData.Number)
-
-		if !reqData.isRequestDataValid() {
-			conn.Write([]byte("malformed"))
-			fmt.Println("data malformed")
-			return
-		} else {
-			fmt.Println("data valid")
-		}
-
-		respData := respMessage{
-			Method: "isPrime",
-			Prime:  reqData.isNumberPrime(),
-		}
-
-		fmt.Println("Final respData => ", respData)
-
-		respByteData, err := json.Marshal(respData)
-
-		respByteData = append(respByteData, []byte("\n")...)
-		if err != nil {
-			fmt.Println("cannot marshal data to send response")
-			conn.Write([]byte("malformed"))
-			return
-		}
-
-		_, err = conn.Write(respByteData)
-		if err != nil {
-			fmt.Println("cannot send response")
-			conn.Write([]byte("malformed"))
-			return
-		}
-		fmt.Println("response sent successfully")
 	}
-
 }
 
 func (msg jsonMessage) isRequestDataValid() bool {
