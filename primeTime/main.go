@@ -52,8 +52,8 @@ func handleConnection(conn net.Conn, cnt int) {
 			return
 		}
 
-		if bytes.IndexByte(buffer[:n], '\n') != -1 {
-		   conn.Write([]byte("malformed"))
+		if bytes.IndexByte(buffer[:n], '\n') == -1 {
+		//    conn.Write([]byte("malformed"))
 		   continue
 		}
 
