@@ -69,7 +69,7 @@ func handleConnection(conn net.Conn, cnt int) {
 				return
 			}
 
-			fmt.Println("Fetched values from json count :", reqData.Method, reqData.Number, cnt)
+			// fmt.Println("Fetched values from json count :", reqData.Method, reqData.Number, cnt)
 
 			if !reqData.isRequestDataValid() {
 				conn.Write([]byte("malformed"))
@@ -106,38 +106,38 @@ func (msg jsonMessage) isRequestDataValid() bool {
 	// when populating data from json into an interface, Go converts the data to float64 by default, because json
 	// cannot distinguish between int and float, hence to save data losses, default type is float
 	if msg.Number == nil || reflect.TypeOf(msg.Number).Kind() != reflect.Float64 {
-		fmt.Println("isRequestDataValid 1", reflect.TypeOf(msg.Number).Kind() != reflect.Float64)
+		// fmt.Println("isRequestDataValid 1", reflect.TypeOf(msg.Number).Kind() != reflect.Float64)
 		return false
 	}
 	if msg.Method != "isPrime" {
-		fmt.Println("isRequestDataValid 2")
+		// fmt.Println("isRequestDataValid 2")
 		return false
 	}
-	fmt.Println("isRequestDataValid 3")
+	// fmt.Println("isRequestDataValid 3")
 	return true
 }
 
 func (msg jsonMessage) isNumberPrime() bool {
 	integerVal, _ := msg.Number.(float64)
 
-	fmt.Println("isNumberPrime 0", integerVal, float64(int(integerVal)) == float64(integerVal))
+	// fmt.Println("isNumberPrime 0", integerVal, float64(int(integerVal)) == float64(integerVal))
 	if float64(int(integerVal)) == float64(integerVal) {
 		return isPrime(int(integerVal))
 	}
-	fmt.Println("isNumberPrime 2")
+	// fmt.Println("isNumberPrime 2")
 	return false
 }
 
 func isPrime(val int) bool {
-	fmt.Println("isPrime 0", val)
+	// fmt.Println("isPrime 0", val)
 	if val <= 1 {
 		return false
 	}
-	fmt.Println("isPrime 1")
+	// fmt.Println("isPrime 1")
 	if val <= 3 {
 		return true
 	}
-	fmt.Println("isPrime 2")
+	// fmt.Println("isPrime 2")
 	if val%2 == 0 || val%3 == 0 {
 		return false
 	}
