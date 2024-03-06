@@ -54,7 +54,7 @@ func handleConnection(conn net.Conn, cnt int) {
 
 		if bytes.IndexByte(buffer[:n], '\n') != -1 {
 		   conn.Write([]byte("malformed"))
-		   return
+		   continue
 		}
 
 		fmt.Printf("Received data => :%d -> %s\n", cnt, buffer[:n-1])
