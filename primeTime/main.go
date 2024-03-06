@@ -40,7 +40,7 @@ func main() {
 }
 func handleConnection(conn net.Conn, cnt int) {
 	defer conn.Close()
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 5 * 1024)
 	for {
 		// fmt.Printf("size of buffer %p\n", &buffer)
 		n, err := conn.Read(buffer)
