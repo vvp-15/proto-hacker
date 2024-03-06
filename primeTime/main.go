@@ -57,6 +57,7 @@ func handleConnection(conn net.Conn, cnt int) {
 			var reqData jsonMessage
 			err = json.Unmarshal([]byte(val), &reqData)
 			if err != nil {
+				fmt.Println("vvp -> ", string(val))
 				fmt.Println("data cannot be unmarshalled", err.Error(), cnt)
 				conn.Write([]byte("malformed"))
 				return
