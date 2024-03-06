@@ -27,57 +27,59 @@ func main() {
 		return
 	}
 	defer listener.Close()
+	cnt := 0
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Could not establish listener!", err.Error())
 			return
 		}
-		go handleConnection(conn)
+		cnt++
+		go handleConnection(conn, cnt)
 	}
 }
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, cnt int) {
 	defer conn.Close()
 	buffer := make([]byte, 1024)
 	for {
-		fmt.Printf("size of buffer %p\n", &buffer)
+		// fmt.Printf("size of buffer %p\n", &buffer)
 		n, err := conn.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println("could not read data form connection! => ", err.Error())
+				fmt.Println("could not read data form connection! => ", err.Error(), cnt)
 			}
 			return
 		}
-		fmt.Printf("Received data => : %s\n", buffer[:n-1])
+		fmt.Printf("Received data => :%d -> %s\n", cnt, buffer[:n-1])
 		var reqString = strings.Split(string(buffer[:n-1]), "\n")
 
 		for _, val := range reqString {
 			var reqData jsonMessage
 			err = json.Unmarshal([]byte(val), &reqData)
 			if err != nil {
-				fmt.Println("data cannot be unmarshalled", err.Error())
+				fmt.Println("data cannot be unmarshalled", err.Error(), cnt)
 				conn.Write([]byte("malformed"))
 				return
 			}
 
-			fmt.Println("Fetched values from json :", reqData.Method, reqData.Number)
+			fmt.Println("Fetched values from json count :", reqData.Method, reqData.Number, cnt)
 
 			if !reqData.isRequestDataValid() {
 				conn.Write([]byte("malformed"))
-				fmt.Println("data malformed")
+				fmt.Println("data malformed", cnt)
 				return
 			} else {
-				fmt.Println("data valid")
+				fmt.Println("data valid", cnt)
 			}
 			respData := respMessage{
 				Method: "isPrime",
 				Prime:  reqData.isNumberPrime(),
 			}
-			fmt.Println("Final respData => ", respData)
+			fmt.Println("Final respData => ", respData, cnt)
 			respByteData, err := json.Marshal(respData)
 			respByteData = append(respByteData, []byte("\n")...)
 			if err != nil {
-				fmt.Println("cannot marshal data to send response")
+				fmt.Println("cannot marshal data to send response", cnt)
 				conn.Write([]byte("malformed"))
 				return
 			}
@@ -88,7 +90,7 @@ func handleConnection(conn net.Conn) {
 				conn.Write([]byte("malformed"))
 				return
 			}
-			fmt.Println("response sent successfully")
+			fmt.Println("response sent successfully", cnt)
 		}
 	}
 }
