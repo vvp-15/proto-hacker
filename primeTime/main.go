@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -52,7 +51,7 @@ func handleConnection(conn net.Conn, cnt int) {
 			return
 		}
 
-		if bytes.IndexByte(buffer[:n], '\n') == -1 {
+		if  buffer[n - 1] != '\n' {
 		//    conn.Write([]byte("malformed"))
 		   continue
 		}
