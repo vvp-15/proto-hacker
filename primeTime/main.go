@@ -35,11 +35,9 @@ func main() {
 			return
 		}
 		cnt++
-		fmt.Println("New Remote Connection ", conn.RemoteAddr().String())
 		go handleConnection(conn, cnt)
 	}
 }
-
 func handleConnection(conn net.Conn, cnt int) {
 	defer conn.Close()
 	buffer := make([]byte, 1024)
@@ -53,9 +51,9 @@ func handleConnection(conn net.Conn, cnt int) {
 			return
 		}
 
-		if buffer[n-1] != '\n' {
-			//    conn.Write([]byte("malformed"))
-			continue
+		if  buffer[n - 1] != '\n' {
+		//    conn.Write([]byte("malformed"))
+		   continue
 		}
 
 		fmt.Printf("Received data => :%d -> %s\n", cnt, buffer[:n-1])
