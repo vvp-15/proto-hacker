@@ -71,7 +71,7 @@ func handleLine(line []byte) ([]byte, bool, error) {
 	if err := json.Unmarshal(line, &req); err != nil || !isValidPrimeRequest(req) {
 		return []byte("invalid request\n"), false, nil
 	}
-
+	log.Println("response:", primeResponse{Method: "isPrime", Prime: isPrime(*req.Number)})
 	resBytes, err := json.Marshal(primeResponse{Method: "isPrime", Prime: isPrime(*req.Number)})
 	if err != nil {
 		return nil, true, err
