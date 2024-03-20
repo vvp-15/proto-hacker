@@ -10,7 +10,7 @@ import (
 var wq sync.WaitGroup
 
 func main() {
-	for i := 0; i < 1000;  i++ {
+	for i := 0; i < 1;  i++ {
 		go dialTCPConn(i)
 		wq.Add(1)
 	}
@@ -19,7 +19,7 @@ func main() {
 
 func dialTCPConn(index int) {
 	defer wq.Done()
-	conn, err := net.Dial("tcp", "localhost:80")
+	conn, err := net.Dial("tcp", "localhost:11000")
 	if err != nil {
 		fmt.Println("Could not connect to sent data!")
 		return

@@ -10,12 +10,12 @@ func main() {
 
 	fmt.Println("Starting TCP Connection!")
 
-	listener, err := net.Listen("tcp", ":80")
+	listener, err := net.Listen("tcp", ":11000")
 	if err != nil {
 		fmt.Println("Could not establish connection!", err.Error())
 		return
 	}
-	defer listener.Close() // TODO: check is this needed??
+	defer listener.Close()
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -29,7 +29,7 @@ func main() {
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 10)
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
