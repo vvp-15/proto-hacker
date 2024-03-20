@@ -57,7 +57,7 @@ func handleConnection(conn net.Conn, cnt int) {
 		}
 
 		fmt.Printf("Received data => :%d -> %s\n", cnt, buffer[:n-1])
-		var reqString = strings.Split(string(buffer[:n-1]), "\n")
+		var reqString = strings.Split(string(buffer[:n]), "\n")
 		fmt.Printf("SplittData =>  %s\n", buffer[:n-1])
 		for _, val := range reqString {
 			var reqData jsonMessage
