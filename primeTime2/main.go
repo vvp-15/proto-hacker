@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -40,17 +41,14 @@ func main() {
 }
 func handleConnection(conn net.Conn, cnt int) {
 	defer conn.Close()
-	buffer := make([]byte, 1024)
 
-	for {
-		n, err := conn.Read(buffer)
-		if err != nil {
-			return
-		}
+	scanner := bufio.NewScanner(conn)
+	for scanner.Scan() {
+		line := scanner.Bytes()
 
-		log.Println("received:", string(buffer[:n]))
+		log.Println("received:", string(line))
 
-		resBytes, valid, err := handleLine(buffer[:n])
+		resBytes, valid, err := handleLine(line)
 		if err != nil {
 			return
 		}
