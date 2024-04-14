@@ -25,7 +25,7 @@ func main() {
 		fmt.Printf("Kuch fat gya")
 		return
 	}
-
+	defer listener.Close()
 	for {
 		conn, err2 := listener.Accept()
 		if err2 != nil {
