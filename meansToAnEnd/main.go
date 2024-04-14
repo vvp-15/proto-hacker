@@ -37,6 +37,7 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
+	defer conn.Close()
 	buffer := make([]byte, 9)
 	for {
 		n, err := conn.Read(buffer)
