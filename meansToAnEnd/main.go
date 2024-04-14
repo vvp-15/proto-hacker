@@ -48,10 +48,6 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
-		if n != 9 {
-			continue
-		}
-
 		// first byte ASCII = I or Q
 		
 	
