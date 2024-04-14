@@ -37,7 +37,7 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
-	fmt.Printf("handleConnection 1")
+	fmt.Println("handleConnection 1")
 	defer conn.Close()
 	buffer := make([]byte, 9)
 	for {
@@ -51,7 +51,7 @@ func handleConnection(conn net.Conn) {
 
 		// first byte ASCII = I or Q
 		
-	
+		fmt.Println("response data n -> ", n);
 		respData := string(buffer[:n])
 		fmt.Println("response data -> ", respData);
 		_, err = conn.Write([]byte(respData))
