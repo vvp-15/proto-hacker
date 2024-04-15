@@ -75,13 +75,7 @@ func handleConnection(conn net.Conn) {
 				}
 			}
 			fmt.Println("response mean -> ", strconv.Itoa(respData / cnt));
-			_, err = conn.Write([]byte(strconv.Itoa(respData / cnt)))
-			if err != nil {
-				fmt.Println("Error sending back data => :", err.Error())
-			} else {
-				fmt.Println("dats sent succesfully")
-			}
-			
+			binary.Write(conn, binary.BigEndian, int32(respData / cnt))
 		} else {
 			_, err = conn.Write([]byte("failed"))
 			if err != nil {
