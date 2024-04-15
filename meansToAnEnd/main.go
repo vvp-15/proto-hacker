@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strings"
 )
 
 type InsertData struct {
@@ -54,7 +53,7 @@ func handleConnection(conn net.Conn) {
 		// first byte ASCII = I or Q
 		reqType := string(buffer[0])
 		firstValue := int32(binary.BigEndian.Uint32(buffer[1:5]))
-		secondValue := int32(binary.BigEndian.Uint32(buffer[6:]))
+		secondValue := int32(binary.BigEndian.Uint32(buffer[6:9]))
 
 		fmt.Println("splitted response data -> ", reqType, firstValue, secondValue)
 		
