@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strconv"
 )
 
 type InsertData struct {
@@ -74,8 +73,15 @@ func handleConnection(conn net.Conn) {
 					respData += int(data[temp].price)
 				}
 			}
-			fmt.Println("response mean -> ", strconv.Itoa(respData / cnt));
-			binary.Write(conn, binary.BigEndian, int32(respData / cnt))
+
+			var avg int32
+			if cnt == 0 {
+				avg = 0
+			} else {
+				avg = int32(respData / cnt)
+			}
+			fmt.Println("response mean -> ",avg);
+			binary.Write(conn, binary.BigEndian, int32(avg))
 		} else {
 			_, err = conn.Write([]byte("failed"))
 			if err != nil {
