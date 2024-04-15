@@ -50,13 +50,13 @@ func handleConnection(conn net.Conn) {
 			}
 			return
 		}
-		fmt.Println("response data n -> ", n);
+		// fmt.Println("response data n -> ", n);
 		// first byte ASCII = I or Q
 		reqType := string(buffer[0])
 		firstValue := int32(binary.BigEndian.Uint32(buffer[1:5]))
 		secondValue := int32(binary.BigEndian.Uint32(buffer[5:9]))
 
-		fmt.Println("splitted response data -> ", reqType, firstValue, secondValue)
+		// fmt.Println("splitted response data -> ", reqType, firstValue, secondValue)
 		
 		if reqType == "I" {
 			data = append(data, InsertData{
@@ -66,7 +66,7 @@ func handleConnection(conn net.Conn) {
 		} else if reqType == "Q" {
 			var respData, cnt int
 			for temp := range data {
-				fmt.Println("Element", data[temp].ts, data[temp].price)
+				// fmt.Println("Element", data[temp].ts, data[temp].price)
 				dataTs := data[temp].ts
 				if dataTs >= firstValue && dataTs <= secondValue {
 					cnt ++;
@@ -80,7 +80,7 @@ func handleConnection(conn net.Conn) {
 			} else {
 				avg = int32(respData / cnt)
 			}
-			fmt.Println("response mean -> ",avg);
+			// fmt.Println("response mean -> ",avg);
 			binary.Write(conn, binary.BigEndian, int32(avg))
 		} else {
 			_, err = conn.Write([]byte("failed"))
