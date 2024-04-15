@@ -49,7 +49,7 @@ func handleConnection(conn net.Conn) {
 			}
 			return
 		}
-
+		fmt.Println("response data n -> ", n);
 		// first byte ASCII = I or Q
 		reqType := string(buffer[0])
 		firstValue := int32(binary.BigEndian.Uint32(buffer[1:5]))
@@ -57,7 +57,7 @@ func handleConnection(conn net.Conn) {
 
 		fmt.Println("splitted response data -> ", reqType, firstValue, secondValue)
 		
-		fmt.Println("response data n -> ", n);
+		
 		respData := string(buffer[:n])
 		fmt.Println("response data -> ", respData);
 		_, err = conn.Write([]byte(respData))
