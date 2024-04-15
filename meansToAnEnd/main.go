@@ -43,7 +43,7 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	buffer := make([]byte, 9)
 	for {
-		n, err := io.ReadFull(conn, buffer)
+		_, err := io.ReadFull(conn, buffer)
 		if err != nil {
 			if err != io.EOF {
 				fmt.Println("could not read data form connection! => ", err.Error())
