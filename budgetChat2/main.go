@@ -63,9 +63,8 @@ func handleConnection(conn net.Conn, clients map[net.Conn]*client) {
 			fmt.Println("msg ye likha-", msg)
 			broadcastMsg(fmt.Sprintf("[%v] %v", clients[conn].name, msg), conn, clients)
 		}
-
 	}
-	fmt.Println("connection close hogya", clients[conn].name)
+	// fmt.Println("connection close hogya", clients[conn].name)
 	broadcastMsg(fmt.Sprintf("* %v has left the room", clients[conn].name), conn, clients)
 	delete(clients, conn)
 }
