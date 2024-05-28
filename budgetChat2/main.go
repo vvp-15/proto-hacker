@@ -40,14 +40,20 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
+	fmt.Println("kafka debug 1 ")
+	
 	defer conn.Close()
 	scanner := bufio.NewScanner(conn)
 	_, err := conn.Write([]byte("Welcome to budgetchat! What shall I call you?"))
 	if err != nil {
 		fmt.Println("msg broadcast nahi kr pae")
 	}
+	fmt.Println("kafka debug 2 ")
+
 	gotName := false
 	for scanner.Scan() {
+		fmt.Println("kafka debug 3 ")
+
 		msg := scanner.Text()
 		if !gotName {
 			fmt.Println("name kya hai-", msg)
