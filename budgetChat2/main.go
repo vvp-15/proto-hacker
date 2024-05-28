@@ -5,12 +5,19 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"sync"
 )
 
 type client struct {
 	name string
 	conn net.Conn
 }
+
+var (
+	clients = make(map[net.Conn]*client)
+	mutex   sync.Mutex
+)
+
 
 func main() {
 	fmt.Println("starting server")
@@ -21,7 +28,6 @@ func main() {
 		return
 	}
 	defer listener.Close()
-	clients := make(map[net.Conn]*client)
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -29,11 +35,11 @@ func main() {
 			return
 		}
 		fmt.Println("new connection aaya ", conn.LocalAddr().String())
-		go handleConnection(conn, clients)
+		go handleConnection(conn)
 	}
 }
 
-func handleConnection(conn net.Conn, clients map[net.Conn]*client) {
+func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	scanner := bufio.NewScanner(conn)
 	_, err := conn.Write([]byte("Welcome to budgetchat! What shall I call you?"))
@@ -47,13 +53,15 @@ func handleConnection(conn net.Conn, clients map[net.Conn]*client) {
 			fmt.Println("name kya hai-", msg)
 			if checkIfValidUserName(msg) {
 				gotName = true
+				mutex.Lock()
 				clients[conn] = &client{
 					name: msg,
 					conn: conn,
 				}
+				mutex.Unlock()
 				fmt.Println("username is valid")
-				broadcastMsg(fmt.Sprintf("* %v has entered the room", msg), conn, clients)
-				sendUserRoomStatus(conn, clients)
+				broadcastMsg(fmt.Sprintf("* %v has entered the room", msg), conn)
+				sendUserRoomStatus(conn)
 			} else {
 				fmt.Println("username is not valid")
 				conn.Write([]byte("Invalid username"))
@@ -61,12 +69,15 @@ func handleConnection(conn net.Conn, clients map[net.Conn]*client) {
 			}
 		} else {
 			fmt.Println("msg ye likha-", msg)
-			broadcastMsg(fmt.Sprintf("[%v] %v", clients[conn].name, msg), conn, clients)
+			broadcastMsg(fmt.Sprintf("[%v] %v", clients[conn].name, msg), conn)
 		}
 	}
 	// fmt.Println("connection close hogya", clients[conn].name)
-	broadcastMsg(fmt.Sprintf("* %v has left the room", clients[conn].name), conn, clients)
+	mutex.Lock()
+	name := clients[conn].name
 	delete(clients, conn)
+	mutex.Unlock()
+	broadcastMsg(fmt.Sprintf("* %v has left the room",name), conn)
 }
 
 func checkIfValidUserName(msg string) bool {
@@ -75,7 +86,7 @@ func checkIfValidUserName(msg string) bool {
 	return match
 }
 
-func broadcastMsg(msg string, conn net.Conn, clients map[net.Conn]*client) {
+func broadcastMsg(msg string, conn net.Conn) {
 	// _, err := conn.Write([]byte(msg))
 	// if err != nil {
 	// 	fmt.Println("msg broadcast nahi kr pae")
@@ -90,7 +101,7 @@ func broadcastMsg(msg string, conn net.Conn, clients map[net.Conn]*client) {
 	}
 }
 
-func sendUserRoomStatus(conn net.Conn, clients map[net.Conn]*client) {
+func sendUserRoomStatus(conn net.Conn) {
 	msg := "* The room contains:"
 	for key := range clients {
 		if key == conn {
