@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -49,34 +50,35 @@ func handleConnection(conn net.Conn) {
 		fmt.Println("msg broadcast nahi kr pae")
 	}
 	fmt.Println("kafka debug 2 ", n)
+	usernameB := make([]byte, 50)
+	read, err := conn.Read(usernameB)
+	if err != nil {
+		return
+	}
+	username := strings.TrimSpace(string(usernameB[:read]))
+	fmt.Println("name kya hai-", username)
+	if checkIfValidUserName(username) {
+		mutex.Lock()
+		clients[conn] = &client{
+			name: username,
+			conn: conn,
+		}
+		mutex.Unlock()
+		fmt.Println("username is valid")
+		broadcastMsg(fmt.Sprintf("* %v has entered the room", username), conn)
+		sendUserRoomStatus(conn)
+	} else {
+		fmt.Println("username is not valid")
+		conn.Write([]byte("Invalid username"))
+		return
+	}
 
-	gotName := false
 	for scanner.Scan() {
 		fmt.Println("kafka debug 3 ")
 
 		msg := scanner.Text()
-		if !gotName {
-			fmt.Println("name kya hai-", msg)
-			if checkIfValidUserName(msg) {
-				gotName = true
-				mutex.Lock()
-				clients[conn] = &client{
-					name: msg,
-					conn: conn,
-				}
-				mutex.Unlock()
-				fmt.Println("username is valid")
-				broadcastMsg(fmt.Sprintf("* %v has entered the room", msg), conn)
-				sendUserRoomStatus(conn)
-			} else {
-				fmt.Println("username is not valid")
-				conn.Write([]byte("Invalid username"))
-				return
-			}
-		} else {
-			fmt.Println("msg ye likha-", msg)
-			broadcastMsg(fmt.Sprintf("[%v] %v", clients[conn].name, msg), conn)
-		}
+		fmt.Println("msg ye likha-", msg)
+		broadcastMsg(fmt.Sprintf("[%v] %v", clients[conn].name, msg), conn)
 	}
 	// fmt.Println("connection close hogya", clients[conn].name)
 	mutex.Lock()
