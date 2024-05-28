@@ -44,11 +44,11 @@ func handleConnection(conn net.Conn) {
 	
 	defer conn.Close()
 	scanner := bufio.NewScanner(conn)
-	_, err := conn.Write([]byte("Welcome to budgetchat! What shall I call you?"))
+	n, err := conn.Write([]byte("Welcome to budgetchat! What shall I call you?"))
 	if err != nil {
 		fmt.Println("msg broadcast nahi kr pae")
 	}
-	fmt.Println("kafka debug 2 ")
+	fmt.Println("kafka debug 2 ", n)
 
 	gotName := false
 	for scanner.Scan() {
