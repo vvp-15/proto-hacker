@@ -35,7 +35,7 @@ func main() {
 			fmt.Println("sunnte wqt fat gya")
 			return
 		}
-		fmt.Println("new connection aaya ", conn.LocalAddr().String())
+		fmt.Println("new connection aaya ", conn.RemoteAddr().String())
 		go handleConnection(conn)
 	}
 }
@@ -53,6 +53,7 @@ func handleConnection(conn net.Conn) {
 	usernameB := make([]byte, 50)
 	read, err := conn.Read(usernameB)
 	if err != nil {
+		fmt.Println("kafka debug 2.r ", err)
 		return
 	}
 	username := strings.TrimSpace(string(usernameB[:read]))
